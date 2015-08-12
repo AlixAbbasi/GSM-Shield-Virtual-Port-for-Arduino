@@ -1,0 +1,37 @@
+
+//Serial Relay For GSM Shield
+#include <SoftwareSerial.h>
+
+SoftwareSerial GPRS(7, 8);
+unsigned char buffer[64]; // buffer array for data over serial port
+int count=0; // counter for buffer array
+void setup() 
+{
+￼￼GPRS.begin(19200); // the GPRS baud rate
+￼ Serial.begin(19200); // the Serial port of Arduino baud rate.
+￼}
+
+void loop()
+{
+￼if (GPRS.available()) // if date is comming from software serial port
+	{
+	while(GPRS.available()) // reading data into char array
+		{
+		buffer[count++]=GPRS.read(); // writing data into array
+		if(count == 64)	break;
+		}
+
+	Serial.write(buffer,count); // if no data transmission ends, write buffer to hardware serial port
+	clearBufferArray(); // call clear BufferArray function to clear the storage data from the array
+	count = 0; // set counter of while loop to zero
+	}
+
+ if (Serial.available()) // if data is available on hardware serial port ==> data is comming from PC or notebook
+ GPRS.write(Serial.read()); // write it to the GPRS shield
+ }
+
+ void clearBufferArray() // function to clear buffer￼array
+ {
+ 	for (int i=0; i<count;i++)
+￼{ buffer[i]=NULL;} // clear all index of array with command NULL
+}
